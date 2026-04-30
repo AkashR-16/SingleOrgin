@@ -1,6 +1,13 @@
 # SingleOrgin
 
-SQL processing toolkit built on sqlglot.
+Akash Ramanarayanan's attepmt to answer these Questions
+
+---
+## Setup
+
+python -m venv .venv  
+source .venv/bin/activate  
+pip install sqlglot
 
 ---
 
@@ -31,15 +38,6 @@ python Q2/singleOrgin_Q2.py
 
 ---
 
-## Setup
+## Q3 and Q4 are answered in the pdf files
 
-python -m venv .venv  
-source .venv/bin/activate  
-pip install sqlglot
 
----
-
-## Notes
-
-- Designed for cross-database compatibility  
-- Uses AST-based transformations for correctness
