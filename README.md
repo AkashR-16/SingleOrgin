@@ -5,10 +5,11 @@ Akash Ramanarayanan's attepmt to answer these Questions
 ---
 ## Setup
 
+```bash
 python -m venv .venv  
 source .venv/bin/activate  
 pip install sqlglot
-
+```
 ---
 
 ## Q1 — MAX_BY Support
@@ -20,8 +21,9 @@ MAX_BY(value, sort_column [, n])
 - Works with nested queries and complex expressions
 
 Run:
+```bash
 python Q1/singleOrgin_Q1.py
-
+```
 ---
 
 ## Q2 — SQL Standardization
@@ -34,8 +36,9 @@ Supported:
 - CURRENT_TIMESTAMP() + 1 → CURRENT_TIMESTAMP() + INTERVAL '1' DAY
 
 Run:
+```bash
 python Q2/singleOrgin_Q2.py
-
+```
 ---
 
 ## Q3 and Q4 are answered in the pdf files
