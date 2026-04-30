@@ -1,0 +1,30 @@
+--- array cast ---
+IN : SELECT CAST([1,2] AS VARCHAR) AS s;
+OUT: SELECT '[1,2]' AS s
+--- array of strings ---
+IN : SELECT CAST(['a','b','c'] AS VARCHAR) AS s;
+OUT: SELECT '[''a'',''b'',''c'']' AS s
+--- array in larger query ---
+IN : SELECT id, CAST([10, 20, 30] AS VARCHAR) AS tags FROM t;
+OUT: SELECT id, '[10,20,30]' AS tags FROM t
+--- bool from 0 ---
+IN : SELECT CAST(0 AS BOOLEAN) AS b;
+OUT: SELECT CASE WHEN 0 = 0 THEN FALSE ELSE TRUE END AS b
+--- bool from 1 ---
+IN : SELECT CAST(1 AS BOOLEAN) AS b;
+OUT: SELECT CASE WHEN 1 = 0 THEN FALSE ELSE TRUE END AS b
+--- bool from expression ---
+IN : SELECT CAST((x + 1) AS BOOLEAN) FROM t;
+OUT: SELECT CASE WHEN (x + 1) = 0 THEN FALSE ELSE TRUE END FROM t
+--- now + 1 ---
+IN : SELECT CURRENT_TIMESTAMP() + 1 AS tomorrow;
+OUT: SELECT CURRENT_TIMESTAMP() + INTERVAL '1' DAY AS tomorrow
+--- date - 7 ---
+IN : SELECT CURRENT_DATE - 7 AS week_ago;
+OUT: SELECT CURRENT_DATE - INTERVAL '7' DAY AS week_ago
+--- non-time + 1 ---
+IN : SELECT salary + 1 FROM employees;
+OUT: SELECT salary + 1 FROM employees
+--- all three together ---
+IN : SELECT CAST([1,2,3] AS VARCHAR) AS arr_str, CAST(0 AS BOOLEAN) AS flag, CURRENT_TIMESTAMP() + 1 AS tomorrow, salary + 1 AS bumped_salary FROM employees;
+OUT: SELECT '[1,2,3]' AS arr_str, CASE WHEN 0 = 0 THEN FALSE ELSE TRUE END AS flag, CURRENT_TIMESTAMP() + INTERVAL '1' DAY AS tomorrow, salary + 1 AS bumped_salary FROM employees

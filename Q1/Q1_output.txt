@@ -1,0 +1,113 @@
+--- Test 1 ---
+Input : SELECT MAX_BY(employee_id, salary) FROM employees;
+AST   : Select(
+  expressions=[
+    MaxBy(
+      this=Column(
+        this=Identifier(this=employee_id, quoted=False)),
+      expression=Column(
+        this=Identifier(this=salary, quoted=False)))],
+  from_=From(
+    this=Table(
+      this=Identifier(this=employees, quoted=False))))
+Calls : [{'col_to_return': 'employee_id', 'col_containing_maximum': 'salary', 'max_n': None}]
+Output: SELECT MAX_BY(employee_id, salary) FROM employees
+
+--- Test 2 ---
+Input : SELECT MAX_BY(employee_id, salary, 3) FROM employees;
+AST   : Select(
+  expressions=[
+    MaxBy(
+      this=Column(
+        this=Identifier(this=employee_id, quoted=False)),
+      expression=Column(
+        this=Identifier(this=salary, quoted=False)),
+      count=Literal(this=3, is_string=False))],
+  from_=From(
+    this=Table(
+      this=Identifier(this=employees, quoted=False))))
+Calls : [{'col_to_return': 'employee_id', 'col_containing_maximum': 'salary', 'max_n': '3'}]
+Output: SELECT MAX_BY(employee_id, salary, 3) FROM employees
+
+--- Test 3 ---
+Input : SELECT MAX_BY(MAX_BY(employee_id, salary), department_id) FROM employees;
+AST   : Select(
+  expressions=[
+    MaxBy(
+      this=MaxBy(
+        this=Column(
+          this=Identifier(this=employee_id, quoted=False)),
+        expression=Column(
+          this=Identifier(this=salary, quoted=False))),
+      expression=Column(
+        this=Identifier(this=department_id, quoted=False)))],
+  from_=From(
+    this=Table(
+      this=Identifier(this=employees, quoted=False))))
+Calls : [{'col_to_return': 'MAX_BY(employee_id, salary)', 'col_containing_maximum': 'department_id', 'max_n': None}, {'col_to_return': 'employee_id', 'col_containing_maximum': 'salary', 'max_n': None}]
+Output: SELECT MAX_BY(MAX_BY(employee_id, salary), department_id) FROM employees
+
+--- Test 4 ---
+Input : SELECT MAX_BY( CASE WHEN salary IS NULL THEN 0 ELSE employee_id END, salary, 5 ) FROM employees;
+AST   : Select(
+  expressions=[
+    MaxBy(
+      this=Case(
+        ifs=[
+          If(
+            this=Is(
+              this=Column(
+                this=Identifier(this=salary, quoted=False)),
+              expression=Null()),
+            true=Literal(this=0, is_string=False))],
+        default=Column(
+          this=Identifier(this=employee_id, quoted=False))),
+      expression=Column(
+        this=Identifier(this=salary, quoted=False)),
+      count=Literal(this=5, is_string=False))],
+  from_=From(
+    this=Table(
+      this=Identifier(this=employees, quoted=False))))
+Calls : [{'col_to_return': 'CASE WHEN salary IS NULL THEN 0 ELSE employee_id END', 'col_containing_maximum': 'salary', 'max_n': '5'}]
+Output: SELECT MAX_BY(CASE WHEN salary IS NULL THEN 0 ELSE employee_id END, salary, 5) FROM employees
+
+--- Test 5 ---
+Input : WITH top_per_dept AS ( SELECT department_id, MAX_BY(employee_id, salary, 2) AS top_two FROM employees GROUP BY department_id ) SELECT * FROM top_per_dept;
+AST   : Select(
+  expressions=[
+    Star()],
+  from_=From(
+    this=Table(
+      this=Identifier(this=top_per_dept, quoted=False))),
+  with_=With(
+    expressions=[
+      CTE(
+        this=Select(
+          expressions=[
+            Column(
+              this=Identifier(this=department_id, quoted=False)),
+            Alias(
+              this=MaxBy(
+                this=Column(
+                  this=Identifier(this=employee_id, quoted=False)),
+                expression=Column(
+                  this=Identifier(this=salary, quoted=False)),
+                count=Literal(this=2, is_string=False)),
+              alias=Identifier(this=top_two, quoted=False))],
+          from_=From(
+            this=Table(
+              this=Identifier(this=employees, quoted=False))),
+          group=Group(
+            expressions=[
+              Column(
+                this=Identifier(this=department_id, quoted=False))])),
+        alias=TableAlias(
+          this=Identifier(this=top_per_dept, quoted=False)))]))
+Calls : [{'col_to_return': 'employee_id', 'col_containing_maximum': 'salary', 'max_n': '2'}]
+Output: WITH top_per_dept AS (SELECT department_id, MAX_BY(employee_id, salary, 2) AS top_two FROM employees GROUP BY department_id) SELECT * FROM top_per_dept
+
+--- Validation tests ---
+  [too few args] rejected: ValueError: MAX_BY expects 2 or 3 arguments, got 1
+  [too many args] rejected: ValueError: MAX_BY expects 2 or 3 arguments, got 4
+  [count = 0] rejected: ValueError: MAX_BY count must be between 1 and 1000, got 0
+  [count > 1000] rejected: ValueError: MAX_BY count must be between 1 and 1000, got 1001

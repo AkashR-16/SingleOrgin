@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyd
+*.pyo
+*.pdb
+*.sqlite3
+*.sqlite
+*.db
+*.db-journal
+*.log
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# macOS
+.DS_Store
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
